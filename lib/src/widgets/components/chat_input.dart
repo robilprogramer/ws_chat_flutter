@@ -1,6 +1,3 @@
-// ============================================
-// lib/src/widgets/components/chat_input.dart
-// ============================================
 import 'package:flutter/material.dart';
 
 class ChatInput extends StatelessWidget {
@@ -11,13 +8,13 @@ class ChatInput extends StatelessWidget {
   final String? hintText;
 
   const ChatInput({
-    Key? key,
+    super.key,
     required this.controller,
     required this.onSend,
     this.enabled = true,
     required this.primaryColor,
     this.hintText,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

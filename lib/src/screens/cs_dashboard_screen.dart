@@ -1,6 +1,5 @@
-// ignore_for_file: deprecated_member_use, avoid_print
-
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/message.dart';
 import '../models/chat_room.dart';
@@ -14,12 +13,12 @@ class CSDashboardScreen extends StatefulWidget {
   final Color? primaryColor;
 
   const CSDashboardScreen({
-    Key? key,
+    super.key,
     required this.serverUrl,
     required this.csUserId,
     required this.csName,
     this.primaryColor,
-  }) : super(key: key);
+  });
 
   @override
   State<CSDashboardScreen> createState() => _CSDashboardScreenState();
@@ -71,14 +70,18 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed && !_isConnected && mounted) {
-      print('📱 [CS] App resumed - reconnecting...');
+      if (kDebugMode) {
+        print('📱 [CS] App resumed - reconnecting...');
+      }
       _connectAndLogin();
     }
   }
 
   void _connectAndLogin() {
     if (!mounted) return;
-    print('🔌 [CS] Connecting to server...');
+    if (kDebugMode) {
+      print('🔌 [CS] Connecting to server...');
+    }
     _socketService.connect();
   }
 
@@ -87,7 +90,9 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
     _connectionSubscription =
         _socketService.connectionStream.listen((connected) {
       if (!mounted) return;
-      print('🔗 [CS] Connection status: $connected');
+      if (kDebugMode) {
+        print('🔗 [CS] Connection status: $connected');
+      }
 
       setState(() {
         _isConnected = connected;
@@ -99,7 +104,9 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
 
         // ALUR SESUAI HTML test.html:
         // 1. CS Login otomatis setelah connect
-        print('🔐 [CS] Auto logging in as: ${widget.csName}');
+        if (kDebugMode) {
+          print('🔐 [CS] Auto logging in as: ${widget.csName}');
+        }
         _socketService.csLogin(
           userId: widget.csUserId,
           name: widget.csName,
@@ -119,7 +126,9 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
     // 2. CHAT ROOMS - List semua chat rooms
     _chatRoomsSubscription = _socketService.chatRoomsStream.listen((rooms) {
       if (!mounted) return;
-      print('📋 [CS] Received ${rooms.length} chat rooms');
+      if (kDebugMode) {
+        print('📋 [CS] Received ${rooms.length} chat rooms');
+      }
 
       setState(() {
         _chatRooms.clear();
@@ -167,7 +176,9 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
     _chatHistorySubscription =
         _socketService.chatHistoryStream.listen((messages) {
       if (!mounted) return;
-      print('📜 [CS] Chat history: ${messages.length} messages');
+      if (kDebugMode) {
+        print('📜 [CS] Chat history: ${messages.length} messages');
+      }
 
       // Hanya update jika masih room yang sama
       if (_selectedRoom != null) {
@@ -182,7 +193,10 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
     // 4. NEW MESSAGES - Real-time dari customer
     _messageSubscription = _socketService.messageStream.listen((message) {
       if (!mounted) return;
-      print('📨 [CS] New message: ${message.text} from ${message.sender.name}');
+      if (kDebugMode) {
+        print(
+            '📨 [CS] New message: ${message.text} from ${message.sender.name}');
+      }
 
       // Hanya add message jika di room yang aktif
       if (_selectedRoom != null && mounted) {
@@ -220,7 +234,9 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
 
   void _selectRoom(ChatRoom room) {
     if (!mounted) return;
-    print('📂 [CS] Selecting room: ${room.customerName} (${room.id})');
+    if (kDebugMode) {
+      print('📂 [CS] Selecting room: ${room.customerName} (${room.id})');
+    }
 
     setState(() {
       _selectedRoom = room;
@@ -247,12 +263,16 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
     final text = _textController.text.trim();
 
     if (text.isEmpty) {
-      print('❌ [CS] Cannot send empty message');
+      if (kDebugMode) {
+        print('❌ [CS] Cannot send empty message');
+      }
       return;
     }
 
     if (!_isConnected) {
-      print('❌ [CS] Cannot send - not connected');
+      if (kDebugMode) {
+        print('❌ [CS] Cannot send - not connected');
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Tidak terhubung. Menunggu koneksi...'),
@@ -262,7 +282,9 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
       return;
     }
 
-    print('📤 [CS] Sending message: $text');
+    if (kDebugMode) {
+      print('📤 [CS] Sending message: $text');
+    }
 
     // Optimistic UI
     final tempMessage = Message(
@@ -313,7 +335,9 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
 
   void _refreshRooms() {
     if (_isConnected && mounted) {
-      print('🔄 [CS] Refreshing rooms...');
+      if (kDebugMode) {
+        print('🔄 [CS] Refreshing rooms...');
+      }
       setState(() => _isLoading = true);
       _socketService.csGetAllRooms(csUserId: widget.csUserId);
     }
@@ -557,7 +581,7 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? primaryColor.withOpacity(0.1)
+                                    ? primaryColor.withValues(alpha: 0.1)
                                     : Colors.white,
                                 border: Border(
                                   left: BorderSide(
@@ -789,7 +813,7 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, -2),
               ),
@@ -873,7 +897,9 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
 
   @override
   void dispose() {
-    print('🧹 [CS] Disposing CSDashboardScreen...');
+    if (kDebugMode) {
+      print('🧹 [CS] Disposing CSDashboardScreen...');
+    }
 
     WidgetsBinding.instance.removeObserver(this);
 
@@ -898,7 +924,9 @@ class _CSDashboardScreenState extends State<CSDashboardScreen>
     _textController.dispose();
     _scrollController.dispose();
 
-    print('✅ [CS] CSDashboardScreen disposed');
+    if (kDebugMode) {
+      print('✅ [CS] CSDashboardScreen disposed');
+    }
     super.dispose();
   }
 }

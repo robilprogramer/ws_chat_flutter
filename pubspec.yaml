@@ -3,10 +3,10 @@ description: A comprehensive real-time chat widget for Flutter with AI
   assistance and seamless customer service handover, built with Socket.IO.
   Perfect for adding customer support chat to your app.
 version: 1.0.0
-homepage: https://github.com/yourusername/ws_chat_flutter
-repository: https://github.com/yourusername/ws_chat_flutter
-issue_tracker: https://github.com/yourusername/ws_chat_flutter/issues
-documentation: https://github.com/yourusername/ws_chat_flutter/blob/main/README.md
+homepage: https://github.com/robilprogramer/ws_chat_flutter
+repository: https://github.com/robilprogramer/ws_chat_flutter
+issue_tracker: https://github.com/robilprogramer/ws_chat_flutter/issues
+documentation: https://github.com/robilprogramer/ws_chat_flutter/blob/main/README.md
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -41,4 +41,4 @@ screenshots:
     path: screenshots/cs_dashboard.png
 
 funding:
-  - https://github.com/sponsors/yourusername
+  - https://github.com/sponsors/robilprogramer

@@ -1,6 +1,5 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/message.dart';
 import '../models/chat_status.dart';
@@ -17,14 +16,14 @@ class ChatScreen extends StatefulWidget {
   final bool showBackButton;
 
   const ChatScreen({
-    Key? key,
+    super.key,
     required this.serverUrl,
     required this.customerId,
     required this.customerName,
     this.primaryColor,
     this.title,
     this.showBackButton = true,
-  }) : super(key: key);
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -78,14 +77,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed && !_isConnected && mounted) {
-      print('📱 App resumed - reconnecting...');
+      if (kDebugMode) {
+        print('📱 App resumed - reconnecting...');
+      }
       _connectAndStart();
     }
   }
 
   void _connectAndStart() {
     if (!mounted) return;
-    print('🔌 [ChatScreen] Connecting to server...');
+    if (kDebugMode) {
+      print('🔌 [ChatScreen] Connecting to server...');
+    }
     _socketService.connect();
   }
 
@@ -94,7 +97,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _connectionSubscription =
         _socketService.connectionStream.listen((connected) {
       if (!mounted) return;
-      print('🔗 [ChatScreen] Connection status: $connected');
+      if (kDebugMode) {
+        print('🔗 [ChatScreen] Connection status: $connected');
+      }
 
       setState(() {
         _isConnected = connected;
@@ -106,14 +111,18 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
         // ALUR SESUAI HTML test.html:
         // 1. Request history dulu
-        print('📜 [ChatScreen] Step 1: Requesting chat history...');
+        if (kDebugMode) {
+          print('📜 [ChatScreen] Step 1: Requesting chat history...');
+        }
         _socketService.getChatHistory(
           customerId: widget.customerId,
           chatRoomId: _chatRoomId,
         );
 
         // 2. Start chat (akan auto join atau create)
-        print('🚀 [ChatScreen] Step 2: Starting chat...');
+        if (kDebugMode) {
+          print('🚀 [ChatScreen] Step 2: Starting chat...');
+        }
         Future.delayed(const Duration(milliseconds: 300), () {
           if (mounted) {
             _socketService.startChat(
@@ -130,7 +139,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     // 2. CHAT STARTED - Update status & chatRoomId
     _chatStartedSubscription = _socketService.chatStartedStream.listen((data) {
       if (!mounted) return;
-      print('💬 [ChatScreen] Chat started event: $data');
+      if (kDebugMode) {
+        print('💬 [ChatScreen] Chat started event: $data');
+      }
 
       setState(() {
         _chatRoomId = data['chatRoomId'];
@@ -169,8 +180,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _chatHistorySubscription =
         _socketService.chatHistoryStream.listen((messages) {
       if (!mounted) return;
-      print(
-          '📜 [ChatScreen] Chat history received: ${messages.length} messages');
+      if (kDebugMode) {
+        print(
+            '📜 [ChatScreen] Chat history received: ${messages.length} messages');
+      }
 
       setState(() {
         _messages.clear();
@@ -182,8 +195,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     // 4. NEW MESSAGES - Real-time
     _messageSubscription = _socketService.messageStream.listen((message) {
       if (!mounted) return;
-      print(
-          '📨 [ChatScreen] New message: ${message.text} from ${message.sender.name}');
+      if (kDebugMode) {
+        print(
+            '📨 [ChatScreen] New message: ${message.text} from ${message.sender.name}');
+      }
 
       setState(() {
         // Avoid duplicates
@@ -208,7 +223,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     // 5. STATUS UPDATES
     _statusSubscription = _socketService.statusStream.listen((status) {
       if (!mounted) return;
-      print('📊 [ChatScreen] Status changed: $status');
+      if (kDebugMode) {
+        print('📊 [ChatScreen] Status changed: $status');
+      }
 
       setState(() {
         if (status == 'ai_mode') {
@@ -224,7 +241,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _typingSubscription = _socketService.typingStream.listen((typing) {
       if (!mounted) return;
 
-      print('⌨️  [ChatScreen] Typing indicator: $typing'); // DEBUG LOG
+      if (kDebugMode) {
+        print('⌨️  [ChatScreen] Typing indicator: $typing');
+      } // DEBUG LOG
 
       setState(() => _isTyping = typing);
 
@@ -232,7 +251,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       if (typing) {
         Future.delayed(const Duration(seconds: 5), () {
           if (mounted && _isTyping) {
-            print('⏰ [ChatScreen] Typing timeout - auto stopping');
+            if (kDebugMode) {
+              print('⏰ [ChatScreen] Typing timeout - auto stopping');
+            }
             setState(() => _isTyping = false);
           }
         });
@@ -242,7 +263,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     // 7. CS ASSIGNED
     _csAssignedSubscription = _socketService.csAssignedStream.listen((data) {
       if (!mounted) return;
-      print('👤 [ChatScreen] CS assigned: ${data['csName']}');
+      if (kDebugMode) {
+        print('👤 [ChatScreen] CS assigned: ${data['csName']}');
+      }
 
       setState(() {
         _csName = data['csName'];
@@ -279,12 +302,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     final text = _textController.text.trim();
 
     if (text.isEmpty) {
-      print('❌ [ChatScreen] Cannot send empty message');
+      if (kDebugMode) {
+        print('❌ [ChatScreen] Cannot send empty message');
+      }
       return;
     }
 
     if (!_isConnected) {
-      print('❌ [ChatScreen] Cannot send - not connected');
+      if (kDebugMode) {
+        print('❌ [ChatScreen] Cannot send - not connected');
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Tidak terhubung. Menunggu koneksi...'),
@@ -294,7 +321,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       return;
     }
 
-    print('📤 [ChatScreen] Sending message: $text');
+    if (kDebugMode) {
+      print('📤 [ChatScreen] Sending message: $text');
+    }
 
     // Optimistic UI - add message immediately
     final tempMessage = Message(
@@ -526,7 +555,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -2),
                 ),
@@ -610,7 +639,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    print('🧹 [ChatScreen] Disposing...');
+    if (kDebugMode) {
+      print('🧹 [ChatScreen] Disposing...');
+    }
 
     WidgetsBinding.instance.removeObserver(this);
 
@@ -633,7 +664,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _textController.dispose();
     _scrollController.dispose();
 
-    print('✅ [ChatScreen] Disposed');
+    if (kDebugMode) {
+      print('✅ [ChatScreen] Disposed');
+    }
     super.dispose();
   }
 }

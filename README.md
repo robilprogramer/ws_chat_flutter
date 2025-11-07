@@ -385,8 +385,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 🐛 [Report bugs](https://github.com/yourusername/ws_chat_flutter/issues)
-- 💬 [Discussions](https://github.com/yourusername/ws_chat_flutter/discussions)
+- 🐛 [Report bugs](https://github.com/robilprogramer/ws_chat_flutter/issues)
+- 💬 [Discussions](https://github.com/robilprogramer/ws_chat_flutter/discussions)
 - 📧 Email: support@example.com
 
 ## 🗺️ Roadmap

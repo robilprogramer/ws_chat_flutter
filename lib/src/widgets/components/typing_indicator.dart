@@ -1,4 +1,3 @@
-// lib/src/widgets/components/typing_indicator.dart
 import 'package:flutter/material.dart';
 
 class TypingIndicator extends StatefulWidget {
@@ -6,9 +5,9 @@ class TypingIndicator extends StatefulWidget {
       typingText; // Optional text: "AI sedang mengetik..." atau "Sarah sedang mengetik..."
 
   const TypingIndicator({
-    Key? key,
+    super.key,
     this.typingText,
-  }) : super(key: key);
+  });
 
   @override
   State<TypingIndicator> createState() => _TypingIndicatorState();
@@ -63,7 +62,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -108,7 +107,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: Colors.grey[400]!.withOpacity(opacity.clamp(0.3, 1.0)),
+              color:
+                  Colors.grey[400]!.withValues(alpha: opacity.clamp(0.3, 1.0)),
               shape: BoxShape.circle,
             ),
           ),

@@ -1,8 +1,3 @@
-// ============================================
-// lib/src/widgets/components/chat_bubble.dart
-// ============================================
-// ignore_for_file: use_super_parameters
-
 import 'package:flutter/material.dart';
 import '../../models/message.dart';
 
@@ -14,13 +9,13 @@ class ChatBubble extends StatelessWidget {
   final String? csName;
 
   const ChatBubble({
-    Key? key,
+    super.key,
     required this.message,
     required this.isCustomer,
     required this.primaryColor,
     this.showSenderName = false,
     this.csName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +90,7 @@ class ChatBubble extends StatelessWidget {
                   ? null
                   : [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 5,
                         offset: const Offset(0, 2),
                       ),
