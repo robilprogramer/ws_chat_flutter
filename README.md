@@ -32,7 +32,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  ws_chat_flutter: ^1.0.0
+  ws_chat_flutter: ^1.0.1
 ```
 
 Then run:
